@@ -3,6 +3,7 @@ package com.fdb.finance_project_backend.controller;
 import com.fdb.finance_project_backend.dto.ValidationDTO;
 import com.fdb.finance_project_backend.entity.FinancialRecord;
 import com.fdb.finance_project_backend.service.FinancialRecordService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/records")
 @AllArgsConstructor
+@Tag(name = "Financial Record Management APIs", description = "All CRUD and Filtering Operations")
 public class FinancialRecordController {
 	private final FinancialRecordService financialRecordService;
 
@@ -53,6 +55,11 @@ public class FinancialRecordController {
 			@RequestParam(required = false) String date) {
 
 		return financialRecordService.filterRecords(type, category, date);
+	}
+
+	@GetMapping("/search")
+	public List<FinancialRecord> search(@RequestParam String keyword) {
+		return financialRecordService.searchByCategory(keyword);
 	}
 
 }

@@ -6,6 +6,7 @@ import com.fdb.finance_project_backend.dto.MonthlyDTO;
 import com.fdb.finance_project_backend.entity.FinancialRecord;
 import com.fdb.finance_project_backend.service.FinancialRecordService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/analyst/dashboard")
 @RequiredArgsConstructor
+@Tag(name = "Dashboard APIs", description = "All dashboard operations")
 public class DashboardController {
 	private final FinancialRecordService financialRecordService;
 

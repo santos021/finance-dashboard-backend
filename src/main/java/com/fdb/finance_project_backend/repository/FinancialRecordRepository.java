@@ -25,4 +25,6 @@ public interface FinancialRecordRepository extends JpaRepository<FinancialRecord
 
 	@Query("SELECT MONTH(f.date), SUM(f.amount) FROM FinancialRecord f GROUP BY MONTH(f.date)")
 	List<Object[]> getMonthlyTrends();
+
+	List<FinancialRecord> findByCategoryContainingIgnoreCase(String category);
 }

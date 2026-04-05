@@ -6,8 +6,12 @@ import com.fdb.finance_project_backend.dto.MonthlyDTO;
 import com.fdb.finance_project_backend.dto.ValidationDTO;
 import com.fdb.finance_project_backend.entity.FinancialRecord;
 import com.fdb.finance_project_backend.entity.Type;
+import com.fdb.finance_project_backend.entity.User;
 import com.fdb.finance_project_backend.repository.FinancialRecordRepository;
+import com.fdb.finance_project_backend.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -17,6 +21,8 @@ import java.util.List;
 @AllArgsConstructor
 public class FinancialRecordService {
 	private final FinancialRecordRepository financialRecordRepository;
+
+	private final UserRepository userRepository;
 
 	public FinancialRecord createRecord(FinancialRecord record){
 		return financialRecordRepository.save(record);
@@ -73,7 +79,17 @@ public class FinancialRecordService {
 				)).toList();
 	}
 
+	private String getCurrentUserEmail() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		return auth.getName(); // email
+	}
+
 	public FinancialRecord createFromDTO(ValidationDTO dto) {
+
+		String email = getCurrentUserEmail();
+
+		User user = userRepository.findByEmail(email)
+				.orElseThrow(()-> new RuntimeException("User not found"));
 
 		FinancialRecord record = new FinancialRecord();
 
@@ -86,6 +102,8 @@ public class FinancialRecordService {
 
 		// Convert String → LocalDate
 		record.setDate(LocalDate.parse(dto.getDate()));
+
+		record.setCreatedBy(user);
 
 		return financialRecordRepository.save(record);
 	}
@@ -100,6 +118,7 @@ public class FinancialRecordService {
 		record.setDescription(dto.getDescription());
 		record.setType(Type.valueOf(dto.getType()));
 		record.setDate(LocalDate.parse(dto.getDate()));
+		record.setCreatedBy(record.getCreatedBy());
 
 		return financialRecordRepository.save(record);
 	}
@@ -129,6 +148,10 @@ public class FinancialRecordService {
 		}
 
 		return financialRecordRepository.findAll();
+	}
+
+	public List<FinancialRecord> searchByCategory(String keyword) {
+		return financialRecordRepository.findByCategoryContainingIgnoreCase(keyword);
 	}
 
 }
